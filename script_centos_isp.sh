@@ -28,7 +28,8 @@ echo "NOZEROCONF=yes" >> /etc/sysconfig/network
 
 #base and add additionnal repo
 
-yum -y install wget
+yum -y install wget >> $LOG 2>&1
+
 echo -e "[\033[33m*\033[0m] Installing & configuring epel, rpmforge repos..."
 rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY* >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error importing key /etc/pki/rpm-gpg/RPM-GPG-KEY*"
 rpm --import http://dag.wieers.com/rpm/packages/RPM-GPG-KEY.dag.txt >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error importing key RPM-GPG-KEY.dag"
