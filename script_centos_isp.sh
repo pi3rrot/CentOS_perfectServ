@@ -47,7 +47,6 @@ configure_repo() {
   mv /tmp/epel.repo /etc/yum.repos.d
 
   #sed -i -e "0,/5/s/enabled=0/enabled=1/" /etc/yum.repos.d/remi.repo
-  echo -e "[\033[32m*\033[0m] Base repository, rpmforge, epel & remi set up"
 }
 
 update_system() {
@@ -124,8 +123,6 @@ install_mysql() {
   " >> $LOG)
 
   echo "$SECURE_MYSQL" >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error configuring MySQL"
-
-  echo -e "[\033[32m*\033[0m] MYSQL set up"
 }
   
 install_dovecot() {
@@ -133,7 +130,6 @@ install_dovecot() {
   yum install dovecot dovecot-mysql -y >> $LOG 2>&1
   chkconfig --levels 235 dovecot on >> $LOG 2>&1
   /etc/init.d/dovecot start >> $LOG 2>&1
-  echo -e "[\033[32m*\033[0m] DOVECOT set up"
 }
   
 install_postfix() {  
@@ -141,13 +137,11 @@ install_postfix() {
   yum install postfix -y >> $LOG 2>&1
   chkconfig --levels 235 postfix on >> $LOG 2>&1
   /etc/init.d/postfix restart >> $LOG 2>&1
-  echo -e "[\033[32m*\033[0m] Postfix set up"
 }
   
 install_getmail() {
   echo -e "[\033[33m*\033[0m] Installing getmail"
   yum install getmail -y >> $LOG 2>&1
-  echo -e "[\033[32m*\033[0m] getmail set up"
 }
 
 install_clamav() {
@@ -157,7 +151,6 @@ install_clamav() {
   chkconfig --levels 235 amavisd on >> $LOG 2>&1
   /usr/bin/freshclam >> $LOG 2>&1
   /etc/init.d/amavisd start >> $LOG 2>&1
-  echo -e "[\033[32m*\033[0m] Antivirus set up"
 }
 
 install_nginx() {
@@ -213,7 +206,6 @@ EOF
   usermod -a -G apache nginx >> $LOG 2>&1
   chkconfig --levels 235 spawn-fcgi on >> $LOG 2>&1
   /etc/init.d/spawn-fcgi start >> $LOG 2>&1
-  echo -e "[\033[32m*\033[0m] NGINX set up !"
 }
 
 install_pma() {

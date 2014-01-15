@@ -24,8 +24,7 @@ It will install and configure :
 * PureFTPD
 * Bind
 * Jailkit
-and...
-* ISPConfig3 !!!
+and launch the ISPConfig3 installer !
 
 have fun !
 
