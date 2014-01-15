@@ -333,26 +333,26 @@ install_rkhunter() {
 }
 
 
-configure_repo()
-update_system()
-install_required_packages()
-install_ntpd()
-disable_fw()
-disable_selinux()
-install_mysql()
-install_dovecot()
-install_postfix()
-install_getmail()
-install_clamav()
-install_nginx()
-install_pma()
-install_mailman()
-install_ftpd()
-install_bind()
-install_awstat()
-install_jailkit()
-install_fail2ban()
-install_rkhunter()
+configure_repo
+update_system
+install_required_packages
+install_ntpd
+disable_fw
+disable_selinux
+install_mysql
+install_dovecot
+install_postfix
+install_getmail
+install_clamav
+install_nginx
+install_pma
+install_mailman
+install_ftpd
+install_bind
+install_awstat
+install_jailkit
+install_fail2ban
+install_rkhunter
 
 echo -e "[\033[33m*\033[0m] Setting ISPConfig !"
 #ISPConfig
