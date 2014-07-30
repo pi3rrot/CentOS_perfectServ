@@ -349,8 +349,8 @@ install_jailkit
 install_fail2ban
 install_rkhunter
 
-echo -e "[\033[33m*\033[0m] Setting ISPConfig !"
 #ISPConfig
+echo -e "[\033[33m*\033[0m] Installing ISPConfig Stable version"
 cd /tmp
 wget http://www.ispconfig.org/downloads/ISPConfig-3-stable.tar.gz >> $LOG 2>&1
 tar xfz ISPConfig-3-stable.tar.gz >> $LOG 2>&1
