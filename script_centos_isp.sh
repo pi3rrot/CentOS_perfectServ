@@ -156,6 +156,11 @@ install_clamav() {
   /etc/init.d/amavisd start >> $LOG 2>&1
 }
 
+install_httpd(){
+  echo -e "[\033[33m*\033[0m] Installing & Configuring Apache Webserver"
+  yum install httpd mod_ssl --enablerepo=epel -y >> $LOG 2>&1	
+}
+
 install_nginx() {
   echo -e "[\033[33m*\033[0m] Installing & Configuring NGINX Webserver"
   yum install nginx --enablerepo=epel -y >> $LOG 2>&1
@@ -340,6 +345,7 @@ install_postfix
 install_getmail
 install_clamav
 install_nginx
+#install_httpd
 install_pma
 install_mailman
 install_ftpd
