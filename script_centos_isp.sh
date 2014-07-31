@@ -17,7 +17,7 @@ echo -e "\033[31mDo you want to continue? (type YES in UPPERCASE)\033[0m"
 read areyousure
 if [ $areyousure != "YES" ]
 then exit 1
-else echo -e "\033[31mStaring script `basename $0` ...\033[0m"
+else echo -e "\033[31mStarting script `basename $0` ...\033[0m"
 fi
 
 LOG=/root/log_script.log
