@@ -299,7 +299,7 @@ EOF
 
 install_awstat() {
   echo -e "[\033[33m*\033[0m] Setting statistics stuffs"
-  um install webalizer awstats perl-DateTime-Format-HTTP perl-DateTime-Format-Builder -y >> $LOG 2>&1
+  yum install webalizer awstats perl-DateTime-Format-HTTP perl-DateTime-Format-Builder -y >> $LOG 2>&1
 }
 
 install_jailkit() {
