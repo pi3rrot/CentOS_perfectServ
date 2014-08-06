@@ -11,8 +11,8 @@ echo "                                      |_|  for auto hosting simply & easil
 echo ""
 echo "To view details: \"tail -f log_script.log\""
 echo ""
-echo -e "\033[31mThis script will modify your configuration server.\033[0m"
-echo -e "\033[31mIt works with NO guarantees\033[0m"
+echo -e "\033[31mThis script will modify your server's configuration.\033[0m"
+echo -e "\033[31mNO guarantees are implied\033[0m"
 echo -e "\033[31mDo you want to continue? (type YES in UPPERCASE)\033[0m"
 read areyousure
 if [ $areyousure != "YES" ]
