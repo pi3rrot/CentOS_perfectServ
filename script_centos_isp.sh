@@ -344,8 +344,8 @@ install_dovecot
 install_postfix
 install_getmail
 install_clamav
-install_nginx
-#install_httpd
+#install_nginx
+install_httpd
 install_pma
 install_mailman
 install_ftpd
