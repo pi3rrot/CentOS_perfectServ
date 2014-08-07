@@ -164,6 +164,15 @@ install_httpd(){
   httpd-devel yum -y install php php-devel php-gd php-imap php-ldap php-mysql php-odbc php-pear php-xml php-xmlrpc \ 
   php-pecl-apc php-mbstring php-mcrypt php-mssql php-snmp php-soap php-tidy curl curl-devel perl-libwww-perl \
   ImageMagick libxml2 libxml2-devel mod_fcgid php-cli httpd-devel >> $LOG 2>&1
+  
+  ###suphp
+  cd /tmp
+wget http://suphp.org/download/suphp-0.7.1.tar.gz
+tar xvfz suphp-0.7.1.tar.gz
+cd suphp-0.7.1/
+./configure --prefix=/usr --sysconfdir=/etc --with-apr=/usr/bin/apr-1-config --with-apxs=/usr/sbin/apxs --with-apache-user=apache --with-setid-mode=owner --with-php=/usr/bin/php-cgi --with-logfile=/var/log/httpd/suphp_log --enable-SUPHP_USE_USERGROUP=yes
+make
+make install
 }
 
 install_nginx() {
