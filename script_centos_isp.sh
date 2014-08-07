@@ -158,7 +158,12 @@ install_clamav() {
 
 install_httpd(){
   echo -e "[\033[33m*\033[0m] Installing & Configuring Apache Webserver"
-  yum install httpd php mod_ssl --enablerepo=epel -y >> $LOG 2>&1	
+  yum install httpd php mod_ssl --enablerepo=epel -y >> $LOG 2>&1
+  yum -y install php php-devel php-gd php-imap php-ldap php-mysql php-odbc php-pear php-xml php-xmlrpc php-pecl-apc php-mbstring php-mcrypt php-mssql \
+  php-snmp php-soap php-tidy curl curl-devel perl-libwww-perl ImageMagick libxml2 libxml2-devel mod_fcgid php-cli \
+  httpd-devel yum -y install php php-devel php-gd php-imap php-ldap php-mysql php-odbc php-pear php-xml php-xmlrpc \ 
+  php-pecl-apc php-mbstring php-mcrypt php-mssql php-snmp php-soap php-tidy curl curl-devel perl-libwww-perl \
+  ImageMagick libxml2 libxml2-devel mod_fcgid php-cli httpd-devel >> $LOG 2>&1
 }
 
 install_nginx() {
