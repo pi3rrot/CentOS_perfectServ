@@ -20,7 +20,7 @@ then exit 1
 else echo -e "\033[31mStarting script `basename $0` ...\033[0m"
 fi
 
-LOG=/root/log_script.log
+LOG=/root/perfect_serv.log
 
 configure_zeroconf() {
 echo "NOZEROCONF=yes" >> /etc/sysconfig/network
