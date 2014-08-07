@@ -158,7 +158,7 @@ install_clamav() {
 
 install_httpd(){
   echo -e "[\033[33m*\033[0m] Installing & Configuring Apache Webserver"
-  yum install httpd mod_ssl --enablerepo=epel -y >> $LOG 2>&1	
+  yum install httpd php mod_ssl --enablerepo=epel -y >> $LOG 2>&1	
 }
 
 install_nginx() {
