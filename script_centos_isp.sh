@@ -175,6 +175,44 @@ make
 make install
 
 echo "LoadModule suphp_module modules/mod_suphp.so" >> /etc/httpd/conf.d/suphp.conf
+
+cat << EOF >> /etc/suphp.conf
+[global]
+;Path to logfile
+logfile=/var/log/httpd/suphp.log
+;Loglevel
+loglevel=info
+;User Apache is running as
+webserver_user=apache
+;Path all scripts have to be in
+docroot=/
+;Path to chroot() to before executing script
+;chroot=/mychroot
+; Security options
+allow_file_group_writeable=true
+allow_file_others_writeable=false
+allow_directory_group_writeable=true
+allow_directory_others_writeable=false
+;Check wheter script is within DOCUMENT_ROOT
+check_vhost_docroot=true
+;Send minor error messages to browser
+errors_to_browser=false
+;PATH environment variable
+env_path=/bin:/usr/bin
+;Umask to set, specify in octal notation
+umask=0077
+; Minimum UID
+min_uid=100
+; Minimum GID
+min_gid=100
+
+[handlers]
+;Handler for php-scripts
+x-httpd-suphp="php:/usr/bin/php-cgi"
+;Handler for CGI-scripts
+x-suphp-cgi="execute:!self"
+EOF
+
 }
 
 install_nginx() {
