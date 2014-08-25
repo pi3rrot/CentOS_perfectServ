@@ -273,7 +273,7 @@ EOF
 install_pma() {
   echo -e "[\033[33m*\033[0m] Setting PHPmyAdmin"
   yum install phpMyAdmin -y >> $LOG 2>&1
-  sed -i -e "s/$cfg['Servers'][$i]['auth_type'] = 'cookie';/$cfg['Servers'][$i]['auth_type'] = 'http';/" /usr/share/phpmyadmin/config.inc.php 2>&1
+  service httpd restart	
   }
 
 install_mailman() {
