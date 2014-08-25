@@ -384,6 +384,7 @@ install_fail2ban() {
 
 install_rkhunter() {
   yum install rkhunter -y >> $LOG 2>&1
+  rkhunter --propupd #create baseline of files
 }
 
 configure_zeroconf
