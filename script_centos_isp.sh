@@ -1,4 +1,6 @@
 #!/bin/bash
+LOG=/root/perfect_serv.log
+
 clear
 echo "   _____           _    ____   _____                    __          _    _____                 "
 echo "  / ____|         | |  / __ \ / ____|                  / _|        | |  / ____|                "
@@ -9,7 +11,7 @@ echo "  \_____\___|_| |_|\__|\____/|_____/  | .__/ \___|_|  |_| \___|\___|\__|__
 echo "                                      | |  v0.1beta"
 echo "                                      |_|  for auto hosting simply & easily"
 echo ""
-echo "To view details: \"tail -f log_script.log\""
+echo "To view details: \"tail -f $LOG\""
 echo ""
 echo -e "\033[31mThis script will modify your server's configuration.\033[0m"
 echo -e "\033[31mNO guarantees are implied\033[0m"
@@ -19,8 +21,6 @@ if [ $areyousure != "YES" ]
 then exit 1
 else echo -e "\033[31mStarting script `basename $0` ...\033[0m"
 fi
-
-LOG=/root/perfect_serv.log
 
 configure_zeroconf() {
 echo "NOZEROCONF=yes" >> /etc/sysconfig/network
@@ -32,19 +32,21 @@ configure_repo() {
 
   echo -e "[\033[33m*\033[0m] Installing & configuring epel, rpmforge repos..."
   rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY* >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error importing key /etc/pki/rpm-gpg/RPM-GPG-KEY*"
-  rpm --import http://dag.wieers.com/rpm/packages/RPM-GPG-KEY.dag.txt >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error importing key RPM-GPG-KEY.dag"
-  cd /tmp
-  wget http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error downloading RPMForge rpm"
-  rpm -ivh rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error installing rpmforge rpm"
+  #rpm --import http://dag.wieers.com/rpm/packages/RPM-GPG-KEY.dag.txt >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error importing key RPM-GPG-KEY.dag"
+  #cd /tmp
+  #wget http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error downloading RPMForge rpm"
+  #rpm -ivh rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error installing rpmforge rpm"
 
-  rpm --import https://fedoraproject.org/static/0608B895.txt >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error importing epel key"
-  wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error downloading epel repo rpm"
-  rpm -ivh epel-release-6-8.noarch.rpm >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error installing epel repo rpm"
+  #rpm --import https://fedoraproject.org/static/0608B895.txt >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error importing epel key"
+  #wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error downloading epel repo rpm"
+  #rpm -ivh epel-release-6-8.noarch.rpm >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error installing epel repo rpm"
 
   #rpm --import http://rpms.famillecollet.com/RPM-GPG-KEY-remi >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error import key remi"
   #rpm -ivh http://rpms.famillecollet.com/enterprise/remi-release-6.rpm >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error installing rpm remi"
+  
+  yum -y install http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm ||  echo -e "[\033[31mX\033[0m] Error installing epel repo"
 
-  yum install yum-priorities -y >> $LOG 2>&1 echo -e "[\033[31mX\033[0m] Error installing yum-priorites"
+  yum install yum-priorities -y >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error installing yum-priorites"
   awk 'NR== 2 { print "priority=10" } { print }' /etc/yum.repos.d/epel.repo > /tmp/epel.repo
   rm /etc/yum.repos.d/epel.repo -f
   mv /tmp/epel.repo /etc/yum.repos.d
@@ -90,7 +92,7 @@ install_mysql() {
   chkconfig --levels 235 mysqld on >> $LOG 2>&1
   /etc/init.d/mysqld start >> $LOG 2>&1
 
-  echo "Type the MySQL root password you want to set: "
+  echo -n "Type the MySQL root password you want to set: "
   read -s mysqlrootpw
 
   SECURE_MYSQL=$(expect -c "
@@ -149,7 +151,8 @@ install_getmail() {
 
 install_clamav() {
   echo -e "[\033[33m*\033[0m] Installing Antivirus/Antispam Layer (it can take some times downloading AV databases)"
-  yum install -y amavisd-new spamassassin clamav clamd unzip bzip2 unrar perl-DBD-mysql --disablerepo=epel >> $LOG 2>&1
+#  yum install -y amavisd-new spamassassin clamav clamd unzip bzip2 unrar perl-DBD-mysql --disablerepo=epel >> $LOG 2>&1
+  yum install -y amavisd-new spamassassin clamav clamd unzip bzip2 unrar perl-DBD-mysql >> $LOG 2>&1
   sa-update >> $LOG 2>&1
   chkconfig --levels 235 amavisd on >> $LOG 2>&1
   /usr/bin/freshclam >> $LOG 2>&1
