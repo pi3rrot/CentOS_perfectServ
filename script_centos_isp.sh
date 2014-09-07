@@ -298,6 +298,8 @@ install_mailman() {
 EOF
 
   newaliases >> $LOG
+  ln -s /etc/aliases /etc/mailman/aliases
+  postalias /var/lib/mailman/data/aliases
   /etc/init.d/postfix restart >> $LOG 2>&1
   chkconfig --levels 235 mailman on >> $LOG 2>&1
   /etc/init.d/mailman start >> $LOG 2>&1
