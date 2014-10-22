@@ -13,7 +13,6 @@ During setup, you will be asked for prompt input for mysql, mailman, and ISPConf
 
 TODO :
 
-* Check MariaDB init script
 * Check spawn_fgci configuration file
 * pypMyAdmin randomize "blowfish_secret" if cookie_authentication
 * test more and more ;o)

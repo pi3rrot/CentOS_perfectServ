@@ -31,7 +31,6 @@ configure_repo() {
   echo -e "[\033[33m*\033[0m] Installing & configuring epel, rpmforge repos..."
   rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error importing key /etc/pki/rpm-gpg/RPM-GPG-KEY.dag.txt"
   cd /tmp
-  wget http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error downloading RPMForge rpm"
   yum install http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm>> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error installing rpmforge rpm"
 
   rpm --import https://fedoraproject.org/static/0608B895.txt >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error importing epel key"
@@ -325,7 +324,7 @@ install_required_packages
 install_ntpd
 disable_fw
 disable_selinux
-install_mysql
+install_mariadb
 install_dovecot
 install_postfix
 install_clamav
