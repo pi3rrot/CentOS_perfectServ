@@ -1,14 +1,13 @@
 #!/bin/bash
 clear
-echo "   _____           _    ____   _____                    __          _    _____                 "
-echo "  / ____|         | |  / __ \ / ____|                  / _|        | |  / ____|                "
-echo " | |     ___ _ __ | |_| |  | | (___    _ __   ___ _ __| |_ ___  ___| |_| (___   ___ _ ____   __"
-echo " | |    / _ \ '_ \| __| |  | |\___ \  | '_ \ / _ \ '__|  _/ _ \/ __| __|\___ \ / _ \ '__\ \ / /"
-echo " | |___|  __/ | | | |_| |__| |____) | | |_) |  __/ |  | ||  __/ (__| |_ ____) |  __/ |   \ V / "
-echo "  \_____\___|_| |_|\__|\____/|_____/  | .__/ \___|_|  |_| \___|\___|\__|_____/ \___|_|    \_/  "
-echo "                                      | |  v0.2"
-echo "                                      |_|  for auto hosting simply & easily"
-echo ""
+
+
+echo "   ___         _    ___  ___ ____                  __        _   ___              "
+echo "  / __|___ _ _| |_ / _ \/ __|__  |  _ __  ___ _ _ / _|___ __| |_/ __| ___ _ ___ __"
+echo " | (__/ -_) ' \  _| (_) \__ \ / /  | '_ \/ -_) '_|  _/ -_) _|  _\__ \/ -_) '_\ V /"
+echo "  \___\___|_||_\__|\___/|___//_/   | .__/\___|_| |_| \___\__|\__|___/\___|_|  \_/ "
+echo "                                   |_|   V0.2 for auto hosting simply & easily    "
+
 
 echo "To view details: \"tail -f log_script.log\""
 echo ""
@@ -84,44 +83,7 @@ install_mariadb() {
   chkconfig --levels 235 mariadb on >> $LOG 2>&1
   systemctl start mariadb >> $LOG 2>&1
   
-  echo "Type the MySQL root password you want to set: "
-  read -s mysqlrootpw  
-  
   /usr/bin/mysql_secure_installation
-
-  SECURE_MYSQL=$(expect -c "
-  
-  set timeout 10
-  spawn mysql_secure_installation
-  
-  expect \"Enter current password for root (enter for none):\"
-  send \"\r\"
-  
-  expect \"Set root password?\"
-  send \"y\r\"
-
-  expect \"New password:\"
-  send \"$mysqlrootpw\r\"
-
-  expect \"Re-enter new password:\"
-  send \"$mysqlrootpw\r\"
-  
-  expect \"Remove anonymous users?\"
-  send \"y\r\"
-  
-  expect \"Disallow root login remotely?\"
-  send \"y\r\"
-  
-  expect \"Remove test database and access to it?\"
-  send \"y\r\"
-  
-  expect \"Reload privilege tables now?\"
-  send \"y\r\"
-  
-  expect eof
-  " >> $LOG)
-
-  echo "$SECURE_MYSQL" >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error configuring MySQL"
 }
   
 install_dovecot() {
@@ -319,7 +281,6 @@ install_rkhunter() {
   yum install rkhunter -y >> $LOG 2>&1
 }
 
-configure_zeroconf
 configure_repo
 update_system
 install_required_packages
