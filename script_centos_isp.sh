@@ -31,8 +31,10 @@ configure_repo() {
   echo -e "[\033[33m*\033[0m] Installing & configuring epel, rpmforge repos..."
   rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error importing key /etc/pki/rpm-gpg/RPM-GPG-KEY.dag.txt"
   cd /tmp
-  yum install http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm>> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error installing rpmforge rpm"
-
+  
+  wget http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error downloading rpmforge rpm"
+  rpm -ivh rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error installing rpmforge rpm"
+  
   rpm --import https://fedoraproject.org/static/0608B895.txt >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error importing epel key"
   wget http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-2.noarch.rpm >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error downloading epel repo rpm"
   rpm -ivh epel-release-7-2.noarch.rpm >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error installing epel repo rpm"
@@ -59,14 +61,14 @@ install_required_packages() {
 install_ntpd() {
   echo -e "[\033[33m*\033[0m] Installing and configure NTPD"
   yum install -y ntp  >> $LOG 2>&1
-  chkconfig ntpd on >> $LOG 2>&1
+  systemctl enable ntpd >> $LOG 2>&1
   systemctl start ntpd >> $LOG 2>&1
 }
 
 disable_fw() {
   echo -e "[\033[33m*\033[0m] Disabling Firewall (for installation time)"
-  service firewalld stop >> $LOG 2>&1
-  chkconfig firewalld off >> $LOG 2>&1
+  systemctl stop firewalld >> $LOG 2>&1
+  systemctl disable firewalld >> $LOG 2>&1
 }
 
 disable_selinux() {
@@ -82,10 +84,10 @@ install_mariadb() {
   chkconfig --levels 235 mariadb on >> $LOG 2>&1
   systemctl start mariadb >> $LOG 2>&1
   
-  /usr/bin/mysql_secure_installation
-
   echo "Type the MySQL root password you want to set: "
-  read -s mysqlrootpw
+  read -s mysqlrootpw  
+  
+  /usr/bin/mysql_secure_installation
 
   SECURE_MYSQL=$(expect -c "
   
