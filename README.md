@@ -10,6 +10,16 @@ You have to read this documentation and the script itself before do anything wit
 You must have a fresh CentOS 7 installation, with nothing installed and full internet access.
 During setup, you will be asked for prompt input for mysql, mailman, and ISPConfig setup.
 
+
+TODO :
+
+* Check MariaDB init script
+* Check spawn_fgci configuration file
+* pypMyAdmin randomize "blowfish_secret" if cookie_authentication
+* test more and more ;o)
+
+
+
 It will install and configure :
 
 * Epel and RPMForge repository
