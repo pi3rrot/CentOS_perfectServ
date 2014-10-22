@@ -29,25 +29,20 @@ configure_repo() {
   yum -y install wget >> $LOG 2>&1
 
   echo -e "[\033[33m*\033[0m] Installing & configuring epel, rpmforge repos..."
-  rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY* >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error importing key /etc/pki/rpm-gpg/RPM-GPG-KEY*"
-  rpm --import http://dag.wieers.com/rpm/packages/RPM-GPG-KEY.dag.txt >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error importing key RPM-GPG-KEY.dag"
+  rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error importing key /etc/pki/rpm-gpg/RPM-GPG-KEY.dag.txt"
   cd /tmp
   wget http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error downloading RPMForge rpm"
-  rpm -ivh rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error installing rpmforge rpm"
+  yum install http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm>> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error installing rpmforge rpm"
 
   rpm --import https://fedoraproject.org/static/0608B895.txt >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error importing epel key"
-  wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error downloading epel repo rpm"
-  rpm -ivh epel-release-6-8.noarch.rpm >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error installing epel repo rpm"
-
-  #rpm --import http://rpms.famillecollet.com/RPM-GPG-KEY-remi >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error import key remi"
-  #rpm -ivh http://rpms.famillecollet.com/enterprise/remi-release-6.rpm >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error installing rpm remi"
+  wget http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-2.noarch.rpm >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error downloading epel repo rpm"
+  rpm -ivh epel-release-7-2.noarch.rpm >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error installing epel repo rpm"
 
   yum install yum-priorities -y >> $LOG 2>&1 echo -e "[\033[31mX\033[0m] Error installing yum-priorites"
   awk 'NR== 2 { print "priority=10" } { print }' /etc/yum.repos.d/epel.repo > /tmp/epel.repo
   rm /etc/yum.repos.d/epel.repo -f
   mv /tmp/epel.repo /etc/yum.repos.d
 
-  #sed -i -e "0,/5/s/enabled=0/enabled=1/" /etc/yum.repos.d/remi.repo
 }
 
 update_system() {
@@ -57,7 +52,7 @@ update_system() {
 
 install_required_packages() {
   echo -e "[\033[33m*\033[0m] Installing required packages"
-  yum install -y vim htop iftop nmap screen git expect >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error installing base packages"
+  yum install -y vim htop iftop iotop net-tools nmap screen git expect openssl >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error installing base packages"
   echo -e "[\033[33m*\033[0m] Installing Development Tools"
   yum groupinstall -y 'Development Tools'  >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error installing Dev Tools metapackage"
 }
@@ -66,62 +61,62 @@ install_ntpd() {
   echo -e "[\033[33m*\033[0m] Installing and configure NTPD"
   yum install -y ntp  >> $LOG 2>&1
   chkconfig ntpd on >> $LOG 2>&1
+  systemctl start ntpd >> $LOG 2>&1
 }
 
 disable_fw() {
   echo -e "[\033[33m*\033[0m] Disabling Firewall (for installation time)"
-  service iptables save >> $LOG 2>&1
-  service iptables stop >> $LOG 2>&1
-  chkconfig iptables off >> $LOG 2>&1
+  service firewalld stop >> $LOG 2>&1
+  chkconfig firewalld off >> $LOG 2>&1
 }
 
 disable_selinux() {
   echo -e "[\033[33m*\033[0m] Disabling SELinux"
-  sed -i -e 's/SELINUX=enforcing/SELINUX=disabled' /etc/selinux/config >> $LOG 2>&1
+  sed -i -e 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config >> $LOG 2>&1
   setenforce 0 >> $LOG 2>&1
 }
 
 
 install_mariadb() {
   echo -e "[\033[33m*\033[0m] Installing MariaDB SQL Server"
-  yum install MariaDB-server MariaDB-client -y >> $LOG 2>&1
-  chkconfig --levels 235 mysqld on >> $LOG 2>&1
-  /etc/init.d/mysqld start >> $LOG 2>&1
+  yum install mariadb-server mariadb-client -y >> $LOG 2>&1
+  chkconfig --levels 235 mariadb on >> $LOG 2>&1
+  systemctl start mariadb >> $LOG 2>&1
 
-  echo "Type the MySQL root password you want to set: "
-  read -s mysqlrootpw
+#  echo "Type the MySQL root password you want to set: "
+#  read -s mysqlrootpw
 
-  SECURE_MYSQL=$(expect -c "
+#  SECURE_MYSQL=$(expect -c "
   
-  set timeout 10
-  spawn mysql_secure_installation
-  
-  expect \"Enter current password for root (enter for none):\"
-  send \"\r\"
-  
-  expect \"Set root password?\"
-  send \"y\r\"
-
-  expect \"New password:\"
-  send \"$mysqlrootpw\r\"
-
-  expect \"Re-enter new password:\"
-  send \"$mysqlrootpw\r\"
-  
-  expect \"Remove anonymous users?\"
-  send \"y\r\"
-  
-  expect \"Disallow root login remotely?\"
-  send \"y\r\"
-  
-  expect \"Remove test database and access to it?\"
-  send \"y\r\"
-  
-  expect \"Reload privilege tables now?\"
-  send \"y\r\"
-  
-  expect eof
-  " >> $LOG)
+#  set timeout 10
+#  spawn mysql_secure_installation
+#  
+#  expect \"Enter current password for root (enter for none):\"
+#  send \"\r\"
+#  
+#  expect \"Set root password?\"
+#  send \"y\r\"
+#
+#  expect \"New password:\"
+#  send \"$mysqlrootpw\r\"
+#
+#  expect \"Re-enter new password:\"
+#  send \"$mysqlrootpw\r\"
+#  
+#  expect \"Remove anonymous users?\"
+#  send \"y\r\"
+#  
+#  expect \"Disallow root login remotely?\"
+#  send \"y\r\"
+#  
+#  expect \"Remove test database and access to it?\"
+#  send \"y\r\"
+#  
+#  expect \"Reload privilege tables now?\"
+#  send \"y\r\"
+#  
+#  expect eof
+#  " >> $LOG)
 
   echo "$SECURE_MYSQL" >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error configuring MySQL"
 }
@@ -129,48 +124,45 @@ install_mariadb() {
 install_dovecot() {
   echo -e "[\033[33m*\033[0m] Installing DOVECOT Server"
   yum install dovecot dovecot-mysql -y >> $LOG 2>&1
-  chkconfig --levels 235 dovecot on >> $LOG 2>&1
-  /etc/init.d/dovecot start >> $LOG 2>&1
+  systemctl enable dovecot >> $LOG 2>&1
+  systemctl start dovecot >> $LOG 2>&1
 }
   
 install_postfix() {  
   echo -e "[\033[33m*\033[0m] Installing Postfix Server"
   yum install postfix -y >> $LOG 2>&1
-  chkconfig --levels 235 postfix on >> $LOG 2>&1
-  /etc/init.d/postfix restart >> $LOG 2>&1
-}
+  systemctl start postfix >> $LOG 2>&1
+  systemctl start postfix >> $LOG 2>&1
   
-install_getmail() {
   echo -e "[\033[33m*\033[0m] Installing getmail"
   yum install getmail -y >> $LOG 2>&1
 }
+  
 
 install_clamav() {
   echo -e "[\033[33m*\033[0m] Installing Antivirus/Antispam Layer (it can take some times downloading AV databases)"
   yum install -y amavisd-new spamassassin clamav clamd unzip bzip2 unrar perl-DBD-mysql --disablerepo=epel >> $LOG 2>&1
   sa-update >> $LOG 2>&1
-  chkconfig --levels 235 amavisd on >> $LOG 2>&1
+  systemctl start clamd >> $LOG 2>&1
   /usr/bin/freshclam >> $LOG 2>&1
-  /etc/init.d/amavisd start >> $LOG 2>&1
 }
 
 install_nginx() {
   echo -e "[\033[33m*\033[0m] Installing & Configuring NGINX Webserver"
   yum install nginx --enablerepo=epel -y >> $LOG 2>&1
 
-  awk 'NR== 21 { print "map $scheme $https {" ; print "default off;" ; print "https on;"; print "}"} { print }' /etc/nginx/nginx.conf > /tmp/nginx.conf
-  rm -f /etc/nginx/nginx.conf
-  mv /tmp/nginx.conf /etc/nginx
+#  awk 'NR== 21 { print "map $scheme $https {" ; print "default off;" ; print "https on;"; print "}"} { print }' /etc/nginx/nginx.conf > /tmp/nginx.conf
+#  rm -f /etc/nginx/nginx.conf
+#  mv /tmp/nginx.conf /etc/nginx
 
-
-  chkconfig --del httpd >> $LOG 2>&1
-  /etc/init.d/httpd stop >> $LOG 2>&1
-  chkconfig --levels 235 nginx on >> $LOG 2>&1
-  /etc/init.d/nginx start >> $LOG 2>&1
+  systemctl disable httpd >> $LOG 2>&1
+  systemctl enable nginx >> $LOG 2>&1
+  systemctl start nginx >> $LOG 2>&1
+  
   yum install php php-fpm php-cli php-mysql php-gd php-imap php-ldap php-odbc php-pear php-xml php-xmlrpc php-pecl-apc php-magickwand php-magpierss php-mbstring php-mcrypt php-mssql php-shout php-snmp php-soap php-tidy -y >> $LOG 2>&1
-  sed -i -e 's/; cgi.fix_pathinfo=0/cgi.fix_pathinfo=0/' /etc/php.ini >> $LOG 2>&1
-  chkconfig --levels 235 php-fpm on >> $LOG 2>&1
-  /etc/init.d/php-fpm start >> $LOG 2>&1
+  sed -i -e 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' /etc/php.ini >> $LOG 2>&1
+  systemctl start php-fpm on >> $LOG 2>&1
+  systemctl start php-fpm >> $LOG 2>&1
   yum install -y fcgi-devel >> $LOG 2>&1
 
   echo -e "  [\033[33m*\033[0m] Compil fcgiwrap (cause it don't exist in rpm for CentOS)"
@@ -205,14 +197,16 @@ install_nginx() {
 EOF
 
   usermod -a -G apache nginx >> $LOG 2>&1
-  chkconfig --levels 235 spawn-fcgi on >> $LOG 2>&1
-  /etc/init.d/spawn-fcgi start >> $LOG 2>&1
+  systemctl enable spawn-fcgi >> $LOG 2>&1
+  systemctl start spawn-fcgi >> $LOG 2>&1
+  
 }
 
 install_pma() {
   echo -e "[\033[33m*\033[0m] Setting PHPmyAdmin"
   yum install phpmyadmin -y >> $LOG 2>&1
-  sed -i -e "s/$cfg['Servers'][$i]['auth_type'] = 'cookie';/$cfg['Servers'][$i]['auth_type'] = 'http';/" /usr/share/phpmyadmin/config.inc.php 2>&1
+  sed -i -e "s/'cookie'/'http'/" /etc/phpMyAdmin/config.inc.php 2>&1
+#  sed -i -e "s/'blowfish_secret'] = '1199196662700621640'/'blowfish_secret'] = '$(echo MONNOMBRE)'/" /etc/phpMyAdmin/config.inc.php 2>&1
   }
 
 install_mailman() {
@@ -234,9 +228,9 @@ install_mailman() {
 EOF
 
   newaliases >> $LOG
-  /etc/init.d/postfix restart >> $LOG 2>&1
-  chkconfig --levels 235 mailman on >> $LOG 2>&1
-  /etc/init.d/mailman start >> $LOG 2>&1
+  systemctl restart postfix >> $LOG 2>&1
+  systemctl enable mailman >> $LOG 2>&1
+  systemctl start mailman >> $LOG 2>&1
   cd /usr/lib/mailman/cgi-bin/
   ln -s ./ mailman
 }
@@ -244,9 +238,8 @@ EOF
 install_ftpd() {
   echo -e "[\033[33m*\033[0m] Setting PureFTPD"
   yum install pure-ftpd -y >> $LOG 2>&1
-  chkconfig --levels 235 pure-ftpd on >> $LOG 2>&1
-  /etc/init.d/pure-ftpd start >> $LOG 2>&1
-  yum install openssl >> $LOG 2>&1
+  systemctl start pure-ftpd >> $LOG 2>&1
+  systemctl enable pure-ftpd >> $LOG 2>&1
 }
 
 install_bind() {
@@ -291,8 +284,8 @@ EOF
 
   touch /etc/named.conf.local
 
-  chkconfig --levels 235 named on >> $LOG 2>&1
-  /etc/init.d/named start >> $LOG 2>&1
+ systemctl start named >> $LOG 2>&1
+ systemctl enable named >> $LOG 2>&1
 }
 
 install_awstat() {
@@ -303,22 +296,20 @@ install_awstat() {
 install_jailkit() {
   echo -e "[\033[33m*\033[0m] Setting Jailkit"
   #Jailkit
-  cd /tmp
-  wget http://olivier.sessink.nl/jailkit/jailkit-2.16.tar.gz >> $LOG 2>&1
-  tar xvfz jailkit-2.16.tar.gz >> $LOG 2>&1
-  cd jailkit-2.16
+  cd /usr/local/src
+  wget http://olivier.sessink.nl/jailkit/jailkit-2.17.tar.gz >> $LOG 2>&1
+  tar xvfz jailkit-2.17.tar.gz >> $LOG 2>&1
+  cd jailkit-2.17
   ./configure >> $LOG 2>&1
   make >> $LOG 2>&1
   make install >> $LOG 2>&1
-  cd ..
-  rm -rf jailkit-2.16* >> $LOG 2>&1
 }
 
 install_fail2ban() {
   echo -e "[\033[33m*\033[0m] Setting fail2ban & RootkitHunter"
   yum install fail2ban -y >> $LOG 2>&1
-  chkconfig --levels 235 fail2ban on >> $LOG 2>&1
-  /etc/init.d/fail2ban start >> $LOG 2>&1
+  systemctl start fail2ban >> $LOG 2>&1
+  systemctl enable fail2ban >> $LOG 2>&1
 }
 
 install_rkhunter() {
@@ -335,7 +326,6 @@ disable_selinux
 install_mysql
 install_dovecot
 install_postfix
-install_getmail
 install_clamav
 install_nginx
 install_pma
