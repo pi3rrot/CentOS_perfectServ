@@ -82,41 +82,43 @@ install_mariadb() {
   yum install mariadb-server mariadb-client -y >> $LOG 2>&1
   chkconfig --levels 235 mariadb on >> $LOG 2>&1
   systemctl start mariadb >> $LOG 2>&1
-
-#  echo "Type the MySQL root password you want to set: "
-#  read -s mysqlrootpw
-
-#  SECURE_MYSQL=$(expect -c "
   
-#  set timeout 10
-#  spawn mysql_secure_installation
-#  
-#  expect \"Enter current password for root (enter for none):\"
-#  send \"\r\"
-#  
-#  expect \"Set root password?\"
-#  send \"y\r\"
-#
-#  expect \"New password:\"
-#  send \"$mysqlrootpw\r\"
-#
-#  expect \"Re-enter new password:\"
-#  send \"$mysqlrootpw\r\"
-#  
-#  expect \"Remove anonymous users?\"
-#  send \"y\r\"
-#  
-#  expect \"Disallow root login remotely?\"
-#  send \"y\r\"
-#  
-#  expect \"Remove test database and access to it?\"
-#  send \"y\r\"
-#  
-#  expect \"Reload privilege tables now?\"
-#  send \"y\r\"
-#  
-#  expect eof
-#  " >> $LOG)
+  /usr/bin/mysql_secure_installation
+
+  echo "Type the MySQL root password you want to set: "
+  read -s mysqlrootpw
+
+  SECURE_MYSQL=$(expect -c "
+  
+  set timeout 10
+  spawn mysql_secure_installation
+  
+  expect \"Enter current password for root (enter for none):\"
+  send \"\r\"
+  
+  expect \"Set root password?\"
+  send \"y\r\"
+
+  expect \"New password:\"
+  send \"$mysqlrootpw\r\"
+
+  expect \"Re-enter new password:\"
+  send \"$mysqlrootpw\r\"
+  
+  expect \"Remove anonymous users?\"
+  send \"y\r\"
+  
+  expect \"Disallow root login remotely?\"
+  send \"y\r\"
+  
+  expect \"Remove test database and access to it?\"
+  send \"y\r\"
+  
+  expect \"Reload privilege tables now?\"
+  send \"y\r\"
+  
+  expect eof
+  " >> $LOG)
 
   echo "$SECURE_MYSQL" >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error configuring MySQL"
 }
