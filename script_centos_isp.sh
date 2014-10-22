@@ -126,7 +126,7 @@ install_nginx() {
   
   yum install php php-fpm php-cli php-mysql php-gd php-imap php-ldap php-odbc php-pear php-xml php-xmlrpc php-pecl-apc php-magickwand php-magpierss php-mbstring php-mcrypt php-mssql php-shout php-snmp php-soap php-tidy -y >> $LOG 2>&1
   sed -i -e 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' /etc/php.ini >> $LOG 2>&1
-  systemctl start php-fpm on >> $LOG 2>&1
+  systemctl enable php-fpm >> $LOG 2>&1
   systemctl start php-fpm >> $LOG 2>&1
   yum install -y fcgi-devel >> $LOG 2>&1
 
