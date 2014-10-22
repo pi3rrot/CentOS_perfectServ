@@ -6,18 +6,19 @@ echo " | |     ___ _ __ | |_| |  | | (___    _ __   ___ _ __| |_ ___  ___| |_| (
 echo " | |    / _ \ '_ \| __| |  | |\___ \  | '_ \ / _ \ '__|  _/ _ \/ __| __|\___ \ / _ \ '__\ \ / /"
 echo " | |___|  __/ | | | |_| |__| |____) | | |_) |  __/ |  | ||  __/ (__| |_ ____) |  __/ |   \ V / "
 echo "  \_____\___|_| |_|\__|\____/|_____/  | .__/ \___|_|  |_| \___|\___|\__|_____/ \___|_|    \_/  "
-echo "                                      | |  v0.1beta"
+echo "                                      | |  v0.2"
 echo "                                      |_|  for auto hosting simply & easily"
 echo ""
-echo "you can \"tail -f log_script.log\" to see what's happend ;)"
+
+echo "To view details: \"tail -f log_script.log\""
 echo ""
-echo -e "\033[31mThis script will modify your configuration server.\033[0m"
-echo -e "\033[31mIt work with NO guaranty\033[0m"
-echo -e "\033[31mDo you know what you do? (type yes UPPERLY)\033[0m"
+echo -e "\033[31mThis script will modify your server's configuration.\033[0m"
+echo -e "\033[31mNO guarantees are implied\033[0m"
+echo -e "\033[31mDo you want to continue? (type yes in UPPERCASE)\033[0m"
 read areyousure
 if [ $areyousure != "YES" ]
 then exit 1
-else echo -e "\033[31mEvil is coming \m/ ...\033[0m"
+else echo -e "\033[31mStarting script `basename $0`\033[0m"
 fi
 
 LOG=/root/log_script.log
@@ -81,9 +82,9 @@ disable_selinux() {
 }
 
 
-install_mysql() {
-  echo -e "[\033[33m*\033[0m] Installing MYSQL Server"
-  yum install mysql mysql-server -y >> $LOG 2>&1
+install_mariadb() {
+  echo -e "[\033[33m*\033[0m] Installing MariaDB SQL Server"
+  yum install MariaDB-server MariaDB-client -y >> $LOG 2>&1
   chkconfig --levels 235 mysqld on >> $LOG 2>&1
   /etc/init.d/mysqld start >> $LOG 2>&1
 
@@ -296,7 +297,7 @@ EOF
 
 install_awstat() {
   echo -e "[\033[33m*\033[0m] Setting statistics stuffs"
-  um install webalizer awstats perl-DateTime-Format-HTTP perl-DateTime-Format-Builder -y >> $LOG 2>&1
+  yum install webalizer awstats perl-DateTime-Format-HTTP perl-DateTime-Format-Builder -y >> $LOG 2>&1
 }
 
 install_jailkit() {
@@ -324,7 +325,7 @@ install_rkhunter() {
   yum install rkhunter -y >> $LOG 2>&1
 }
 
-
+configure_zeroconf
 configure_repo
 update_system
 install_required_packages
@@ -346,7 +347,7 @@ install_jailkit
 install_fail2ban
 install_rkhunter
 
-echo -e "[\033[33m*\033[0m] Setting ISPConfig !"
+echo -e "[\033[33m*\033[0m] Installing ISPConfig Stable version"
 #ISPConfig
 cd /tmp
 wget http://www.ispconfig.org/downloads/ISPConfig-3-stable.tar.gz >> $LOG 2>&1
