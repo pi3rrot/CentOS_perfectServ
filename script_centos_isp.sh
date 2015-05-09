@@ -1,15 +1,18 @@
 #!/bin/bash
-clear
 
+#variables
+LOG=/root/ispconfig.log
+VER=0.2
+
+clear
 
 echo "   ___         _    ___  ___ ____                  __        _   ___              "
 echo "  / __|___ _ _| |_ / _ \/ __|__  |  _ __  ___ _ _ / _|___ __| |_/ __| ___ _ ___ __"
 echo " | (__/ -_) ' \  _| (_) \__ \ / /  | '_ \/ -_) '_|  _/ -_) _|  _\__ \/ -_) '_\ V /"
 echo "  \___\___|_||_\__|\___/|___//_/   | .__/\___|_| |_| \___\__|\__|___/\___|_|  \_/ "
-echo "                                   |_|   V0.2 for auto hosting simply & easily    "
+echo "                                   |_|   V$VER for auto hosting simply & easily    "
 
-
-echo "To view details: \"tail -f log_script.log\""
+echo "To view details: \"tail -f $LOG\""
 echo ""
 echo -e "\033[31mThis script will modify your server's configuration.\033[0m"
 echo -e "\033[31mNO guarantees are implied\033[0m"
