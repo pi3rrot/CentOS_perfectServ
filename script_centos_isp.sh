@@ -23,7 +23,7 @@ then exit 1
 else echo -e "\033[31mStarting script `basename $0`\033[0m"
 fi
 
-LOG=/root/log_script.log
+
 echo "NOZEROCONF=yes" >> /etc/sysconfig/network
 
 # Configuration of repository for CentOS
