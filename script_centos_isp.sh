@@ -25,7 +25,7 @@ echo "NOZEROCONF=yes" >> /etc/sysconfig/network
 
 # Configuration of repository for CentOS
 configure_repo() {
-  yum -y install wget >> $LOG 2>&1
+  yum -y install wget epel.release >> $LOG 2>&1
 
   echo -e "[\033[33m*\033[0m] Installing & configuring epel, rpmforge repos..."
   rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error importing key /etc/pki/rpm-gpg/RPM-GPG-KEY.dag.txt"
@@ -33,10 +33,6 @@ configure_repo() {
   
   wget http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error downloading rpmforge rpm"
   rpm -ivh rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm >> $LOG 2>&1 || echo -e "[\033[31mX\033[0m] Error installing rpmforge rpm"
-  
-  rpm --import https://fedoraproject.org/static/0608B895.txt >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error importing epel key"
-  wget http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-2.noarch.rpm >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error downloading epel repo rpm"
-  rpm -ivh epel-release-7-2.noarch.rpm >> $LOG 2>&1  || echo -e "[\033[31mX\033[0m] Error installing epel repo rpm"
 
   yum install yum-priorities -y >> $LOG 2>&1 echo -e "[\033[31mX\033[0m] Error installing yum-priorites"
   awk 'NR== 2 { print "priority=10" } { print }' /etc/yum.repos.d/epel.repo > /tmp/epel.repo
